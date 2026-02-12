@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>快递查询 - Declarative API Demo</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .tracking-result{display:none;margin-top:1.5rem;padding:1.5rem;background:var(--bg);border-radius:12px}
+    .tracking-result.show{display:block}
+    .tracking-timeline{position:relative;padding-left:2rem}
+    .tracking-timeline::before{content:'';position:absolute;left:0.5rem;top:0;bottom:0;width:2px;background:var(--border)}
+    .tracking-item{position:relative;padding-bottom:1.5rem}
+    .tracking-item::before{content:'';position:absolute;left:-1.75rem;top:0.25rem;width:12px;height:12px;border-radius:50%;background:var(--secondary);border:2px solid #fff}
+    .tracking-item:first-child::before{background:var(--primary)}
+    .tracking-item-time{font-size:0.85rem;color:var(--text-secondary)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📦 快递查询系统</h1>
+      <p><span class="badge badge-declarative">Declarative API</span> HTML 属性声明式实现</p>
+    </header>
+    <div class="card">
+      <h2>🔍 查询快递</h2>
+      <p style="margin-bottom:1rem;color:var(--text-secondary)">这个表单使用 HTML 属性自动注册为 WebMCP 工具</p>
+      <form id="tracking-form" toolname="track_package" tooldescription="查询快递物流信息" onsubmit="handleTrackingSubmit(event)">
+        <div class="form-group">
+          <label>快递公司</label>
+          <select name="carrier" required toolparamtitle="快递公司" toolparamdescription="SF=顺丰,YTO=圆通,ZTO=中通,JD=京东">
+            <option value="">请选择</option>
+            <option value="SF">顺丰速运</option>
+            <option value="YTO">圆通速递</option>
+            <option value="ZTO">中通快递</option>
+            <option value="JD">京东物流</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>运单号</label>
+          <input type="text" name="tracking_number" required placeholder="请输入运单号" toolparamtitle="运单号" toolparamdescription="快递运单号">
+        </div>
+        <button type="submit" class="btn btn-primary">🔍 查询物流</button>
+      </form>
+      <div id="tracking-result" class="tracking-result">
+        <h3 style="margin-bottom:1rem">📋 物流轨迹</h3>
+        <div class="status" id="tracking-status">运输中</div>
+        <div class="tracking-timeline" id="tracking-timeline" style="margin-top:1rem"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>💻 HTML 代码示例</h2>
+      <pre class="result-box">&lt;form toolname="track_package"
+      tooldescription="查询快递"&gt;
+  &lt;select name="carrier" 
+          toolparamtitle="快递公司"&gt;
+    &lt;option value="SF"&gt;顺丰&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;input name="tracking_number"
+         toolparamtitle="运单号"&gt;
+&lt;/form&gt;</pre>
+    </div>
+    <div class="card">
+      <h2>📝 执行日志</h2>
+      <div id="log-container" class="result-box" style="min-height:100px;max-height:300px;overflow-y:auto">等待操作...</div>
+    </div>
+    <a href="../" class="btn btn-outline" style="margin-top:1rem">← 返回首页</a>
+  </div>
+  <div class="tool-indicator"><div class="tool-indicator-dot"></div><span>Declarative 工具已注册</span></div>
+  <script>
+    function log(msg) { document.getElementById('log-container').textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n\n` + document.getElementById('log-container').textContent; }
+    function getMockData(carrier, num) {
+      const names = { SF: '顺丰', YTO: '圆通', ZTO: '中通', JD: '京东' };
+      return { carrier: names[carrier] || carrier, trackingNumber: num, status: '运输中', timeline: [
+        { time: '2026-02-11 14:30', desc: '快件已到达【北京转运中心】' },
+        { time: '2026-02-11 08:15', desc: '快件已从【上海转运中心】发出' },
+        { time: '2026-02-10 22:40', desc: '快件已到达【上海转运中心】' },
+        { time: '2026-02-10 16:05', desc: '快递员已揽收' },
+      ]};
+    }
+    function handleTrackingSubmit(e) {
+      e.preventDefault();
+      const carrier = e.target.carrier.value, num = e.target.tracking_number.value;
+      log(`🔍 查询: ${carrier} - ${num}`);
+      if (e.agentInvoked) { log('🤖 AI 代理触发'); e.respondWith(Promise.resolve(JSON.stringify(getMockData(carrier, num)))); }
+      const data = getMockData(carrier, num);
+      document.getElementById('tracking-status').textContent = data.status;
+      document.getElementById('tracking-timeline').innerHTML = data.timeline.map(t => `<div class="tracking-item"><div class="tracking-item-time">${t.time}</div><div>${t.desc}</div></div>`).join('');
+      document.getElementById('tracking-result').classList.add('show');
+      log(`✅ 查询成功: ${data.carrier} ${data.trackingNumber}`);
+    }
+    window.addEventListener('toolactivated', ({ toolName }) => log(`🤖 AI 使用工具: ${toolName}`));
+    document.addEventListener('DOMContentLoaded', () => { log('✅ Declarative 工具已自动注册'); });
+  </script>
+</body>
+</html>

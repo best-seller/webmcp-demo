@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能点餐 - Imperative API Demo</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🍜 智能点餐系统</h1>
+      <p><span class="badge badge-imperative">Imperative API</span> JavaScript 编程式实现</p>
+    </header>
+    <div class="card">
+      <h2>📋 菜单</h2>
+      <p style="margin-bottom:1rem;color:var(--text-secondary)">AI 可以通过 <code>get_menu</code> 获取菜单，<code>place_order</code> 下单</p>
+      <div class="grid grid-2" id="menu-container"></div>
+    </div>
+    <div class="card">
+      <h2>🛒 我的订单</h2>
+      <div id="cart-container"><p style="color:var(--text-secondary)">还没有添加任何菜品</p></div>
+      <div id="cart-total" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)"><strong>总计: ¥<span id="total-price">0</span></strong></div>
+      <button class="btn btn-primary" id="checkout-btn" style="margin-top:1rem;display:none" onclick="checkout()">✅ 确认下单</button>
+    </div>
+    <div class="card">
+      <h2>🔧 已注册的工具</h2>
+      <div id="tools-list"></div>
+    </div>
+    <div class="card">
+      <h2>📝 执行日志</h2>
+      <div id="log-container" class="result-box" style="min-height:100px;max-height:300px;overflow-y:auto">等待工具调用...</div>
+    </div>
+    <a href="../" class="btn btn-outline" style="margin-top:1rem">← 返回首页</a>
+  </div>
+  <div class="tool-indicator" id="tool-indicator" style="display:none"><div class="tool-indicator-dot"></div><span>WebMCP 工具已就绪</span></div>
+  <script src="app.js"></script>
+</body>
+</html>
